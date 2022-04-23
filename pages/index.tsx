@@ -1,19 +1,37 @@
+import * as React from 'react';
 import type {GetServerSideProps, InferGetServerSidePropsType, NextPage} from 'next';
 import styled from 'styled-components';
-import {generateCellMap} from '../model/cell';
-import CellMap from '../components/presentational/CellMap';
+import {Cell, CellMap, generateCellMap, revealCell} from '../model/cell';
+import CellMapComp from '../components/presentational/CellMap';
+import CellContainer from '../components/container/Cell';
 
 const Home: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ({
-  cellMap,
-  rowsLength,
-  columnsLength,
+  initialCellMap,
 }) => {
+  const [cellMap, setCellMap] = React.useState<CellMap>(initialCellMap);
+  const [isMineTriggered, setIsMineTriggered] = React.useState(false);
+
+  const handleMineTrigger = () => {
+    setIsMineTriggered(true);
+  };
+
+  const handleCellReveal = (cellId: Cell['id']) => {
+    setCellMap((cellMap) => revealCell(cellId, cellMap));
+  };
+
   return (
     <Main>
-      <CellMap
+      {isMineTriggered ? 'A mine has been triggered' : null}
+
+      <CellMapComp
         cellMap={cellMap}
-        rowsLength={rowsLength}
-        columnsLength={columnsLength}
+        renderCell={(cell) => (
+          <CellContainer
+            cell={cell}
+            onMineTrigger={handleMineTrigger}
+            onCellReveal={handleCellReveal}
+          />
+        )}
       />
     </Main>
   );
@@ -24,13 +42,13 @@ export default Home;
 export const getServerSideProps = () => {
   const rowsLength = 16;
   const columnsLength = 16;
-  const cellMap = generateCellMap(rowsLength, columnsLength, 40);
+  const initialCellMap = generateCellMap(rowsLength, columnsLength, 40);
 
   return {
     props: {
       rowsLength,
       columnsLength,
-      cellMap,
+      initialCellMap,
     },
   };
 };

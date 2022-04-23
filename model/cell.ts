@@ -1,21 +1,33 @@
 import {generateArray} from '../utils/array';
-import {getMinesPositions, isPositionInMinePositions} from './mines';
+import {
+  getMinesPositions,
+  getNeighborMinesCount,
+  isPositionInMinePositions,
+} from './mines';
 
-export type Cell = {
-  row: number;
-  column: number;
+export type CellPosition = {row: number; column: number};
+export type CellPositions = Array<CellPosition>;
+
+export type Cell = CellPosition & {
   id: string;
   isRevealed: boolean;
   hasMine: boolean;
+  neighborMinesCount: number;
 };
 
-const generateCell = (row: number, column: number, hasMine: boolean): Cell => {
+const generateCell = (
+  row: CellPosition['row'],
+  column: CellPosition['column'],
+  hasMine: boolean,
+  neighborMinesCount: number,
+): Cell => {
   return {
     row,
     column,
     id: `${row}-${column}`,
     isRevealed: false,
     hasMine,
+    neighborMinesCount,
   };
 };
 
@@ -33,7 +45,9 @@ export const generateCellMap = (
   return rowsArr.map((row) => {
     return columnsArr.map((column) => {
       const hasMine = isPositionInMinePositions(row, column, minesPositions);
-      return generateCell(row, column, hasMine);
+      const neighborMinesCount = getNeighborMinesCount(row, column, minesPositions);
+
+      return generateCell(row, column, hasMine, neighborMinesCount);
     });
   });
 };
@@ -42,6 +56,39 @@ export const mapCellMap = <F>(cbFn: (cell: Cell) => F, cellMap: CellMap) => {
   return cellMap.map((row) => {
     return row.map((cell) => {
       return cbFn(cell);
+    });
+  });
+};
+
+export const getNeighborCellPositions = (
+  row: CellPosition['row'],
+  column: CellPosition['column'],
+): CellPositions => {
+  return [
+    {row: row - 1, column: column - 1},
+    {row: row - 1, column: column},
+    {row: row - 1, column: column + 1},
+    {row: row, column: column - 1},
+    {row: row, column: column + 1},
+    {row: row + 1, column: column - 1},
+    {row: row + 1, column: column},
+    {row: row + 1, column: column + 1},
+  ].filter((position) => {
+    return position.row >= 0 && position.column >= 0;
+  });
+};
+
+export const revealCell = (cellId: Cell['id'], cellMap: CellMap) => {
+  return cellMap.map((cellRow) => {
+    return cellRow.map((cell) => {
+      if (cell.id === cellId) {
+        return {
+          ...cell,
+          isRevealed: true,
+        };
+      }
+
+      return cell;
     });
   });
 };

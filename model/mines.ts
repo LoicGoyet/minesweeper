@@ -1,14 +1,13 @@
 import {Random} from 'random-js';
+import {arrayCount} from '../utils/array';
+import {CellPosition, CellPositions, getNeighborCellPositions} from './cell';
 
 const random = new Random();
-
-type MinePosition = {row: number; column: number};
-type MinePositions = Array<MinePosition>;
 
 export const isPositionInMinePositions = (
   rowPos: number,
   columnPos: number,
-  minePositions: MinePositions,
+  minePositions: CellPositions,
 ) => {
   return minePositions.some((item) => item.row === rowPos && item.column === columnPos);
 };
@@ -18,7 +17,7 @@ export const getMinesPositions = (
   columns: number,
   minesLength: number,
 ) => {
-  let minesPositions: MinePositions = [];
+  let minesPositions: CellPositions = [];
 
   while (minesPositions.length < minesLength) {
     const rowPos = random.integer(0, rows - 1);
@@ -35,4 +34,21 @@ export const getMinesPositions = (
   }
 
   return minesPositions;
+};
+
+export const getNeighborMinesCount = (
+  row: CellPosition['row'],
+  column: CellPosition['column'],
+  minePositions: CellPositions,
+) => {
+  const neighborCellPositions = getNeighborCellPositions(row, column);
+
+  return arrayCount((cellPosition) => {
+    return minePositions.some((minePosition) => {
+      return (
+        minePosition.row === cellPosition.row &&
+        minePosition.column === cellPosition.column
+      );
+    });
+  }, neighborCellPositions);
 };
