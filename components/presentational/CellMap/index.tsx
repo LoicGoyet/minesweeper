@@ -33,5 +33,6 @@ const Wrapper = styled.table`
 `;
 
 const Cell = styled.td`
-  border: 1px solid;
+  font-size: 0;
+  padding: 0;
 `;

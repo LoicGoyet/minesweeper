@@ -4,13 +4,12 @@ import {Cell} from '../../../model/cell';
 import CellComp from '../../presentational/Cell';
 
 type Props = {
-  className?: string;
   cell: Cell;
   onCellReveal: (cellId: Cell['id']) => void;
   onMineTrigger: () => void;
 };
 
-const Cell = ({className, cell, onMineTrigger, onCellReveal}: Props) => {
+const Cell = ({cell, onMineTrigger, onCellReveal}: Props) => {
   const handleClick = () => {
     if (!cell.isRevealed) {
       return cell.hasMine ? onMineTrigger() : onCellReveal(cell.id);
@@ -20,8 +19,8 @@ const Cell = ({className, cell, onMineTrigger, onCellReveal}: Props) => {
   };
 
   return (
-    <CellComp className={className} onClick={handleClick} isRevealed={cell.isRevealed}>
-      {cell.hasMine ? 'x' : cell.neighborMinesCount}
+    <CellComp onClick={handleClick} isRevealed={cell.isRevealed}>
+      {cell.hasMine ? 'x' : cell.neighborMinesCount || null}
     </CellComp>
   );
 };
