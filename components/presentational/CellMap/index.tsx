@@ -17,7 +17,7 @@ const CellMap = ({className, cellMap, rowsLength, columnsLength}: Props) => {
           return (
             <tr key={index}>
               {cellRow.map((cell) => {
-                return <Cell key={cell.id} />;
+                return <Cell key={cell.id}>{cell.hasMine ? 'x' : 0}</Cell>;
               })}
             </tr>
           );
@@ -37,4 +37,7 @@ const Cell = styled.td`
   border: 1px solid;
   height: 30px;
   width: 30px;
+  text-align: center;
+  line-height: 30px;
+  font-size: 10px;
 `;

@@ -1,13 +1,13 @@
-import type {NextPage} from 'next';
+import type {GetServerSideProps, InferGetServerSidePropsType, NextPage} from 'next';
 import styled from 'styled-components';
 import {generateCellMap} from '../model/cell';
 import CellMap from '../components/presentational/CellMap';
 
-const Home: NextPage = () => {
-  const rowsLength = 16;
-  const columnsLength = 16;
-  const cellMap = generateCellMap(16, 16);
-
+const Home: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ({
+  cellMap,
+  rowsLength,
+  columnsLength,
+}) => {
   return (
     <Main>
       <CellMap
@@ -20,6 +20,20 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+export const getServerSideProps = () => {
+  const rowsLength = 16;
+  const columnsLength = 16;
+  const cellMap = generateCellMap(rowsLength, columnsLength, 40);
+
+  return {
+    props: {
+      rowsLength,
+      columnsLength,
+      cellMap,
+    },
+  };
+};
 
 const Main = styled.main`
   min-height: 100vh;
